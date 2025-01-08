@@ -1,3 +1,16 @@
+# Node modules and build directories
+node_modules
+client/node_modules
+client/dist
+client/dist-ssr
+*.local
+
+# public
+/backend/public
+
+# env
+.env
+
 # Logs
 logs
 *.log
@@ -6,11 +19,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
 
 # Editor directories and files
 .vscode/*
