@@ -5,7 +5,7 @@
   "main": "backend/server.js",
   "type": "module",
   "scripts": {
-    "server": "node backend/server.js",
+    "server": "nodemon backend/server.js",
     "client": "npm run dev --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "clean": "rm -rf node_modules package-lock.json client/node_modules client/package-lock.json client/build",
@@ -24,9 +24,11 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-async-handler": "^1.2.0",
+    "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
