@@ -41,9 +41,9 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
       enum: [
-        "Cheif Engineer",
+        "Chief Engineer",
         "Electrician",
-        "HAVC Technician",
+        "HVAC Technician",
         "Plumber",
         "Painter",
         "General Mechanic",
