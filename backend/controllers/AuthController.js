@@ -35,7 +35,7 @@ const signup = asyncHandler(async (req, res, next) => {
     .digest("hex");
 
   // Create new user
-  const newUser = new User({
+  const newUser = await User.create({
     firstName,
     lastName,
     email,
@@ -45,18 +45,23 @@ const signup = asyncHandler(async (req, res, next) => {
     verificationTokenExpiry: Date.now() + 3600000, // 1 hour expiration
   });
 
-  // Save and Send verification email
-  try {
-    await newUser.save();
-    await sendVerificationEmail(email, verificationToken);
+  if (!newUser) {
+    return next(new CustomError("Failed to create user", 400));
+  }
 
+  try {
+    await sendVerificationEmail(email, verificationToken);
     res.status(201).json({
-      message:
-        "Account created successfully. Please check your email for verification.",
+      message: "User created successfully. Please verify your email",
     });
-  } catch (err) {
-    await User.deleteOne({ email });
-    next(err);
+  } catch (error) {
+    await User.findByIdAndDelete(newUser._id);
+    return next(
+      new CustomError(
+        "Failed to send verification email. Please try again",
+        500
+      )
+    );
   }
 });
 
@@ -89,7 +94,6 @@ const verifyEmail = asyncHandler(async (req, res, next) => {
   // Generate access and refresh tokens
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
-
 
   // Set cookies
   res.cookie("access_token", accessToken, {
