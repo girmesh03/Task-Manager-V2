@@ -8,6 +8,8 @@ import HomePage from "./pages/Home";
 import SignupPage from "./pages/Signup";
 import VerifyEmailPage from "./pages/VerifyEmail";
 import LoginPage from "./pages/Login";
+import ForgotPasswordPage from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPassword";
 
 import Dashboard from "./pages/Dashboard";
 import TasksPage from "./pages/Tasks";
@@ -22,8 +24,13 @@ function App() {
           <Route index element={<HomePage />} />
           <Route element={<AuthLayout />}>
             <Route path="signup" element={<SignupPage />} />
-            <Route path="verify/:token" element={<VerifyEmailPage />} />
+            <Route path="verify-email" element={<VerifyEmailPage />} />
             <Route path="login" element={<LoginPage />} />
+            <Route path="forgot-password" element={<ForgotPasswordPage />} />
+            <Route
+              path="reset-password/:resetToken"
+              element={<ResetPasswordPage />}
+            />
           </Route>
           <Route element={<AppLayout />}>
             <Route path="dashboard" element={<Dashboard />} />

@@ -1,9 +1,14 @@
 import asyncHandler from "express-async-handler";
-import crypto from "crypto";
 import { validationResult } from "express-validator";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
 import CustomError from "../utils/CustomError.js";
 import User from "../models/UserModel.js";
-import { sendVerificationEmail } from "../utils/SendEmail.js";
+import {
+  sendVerificationEmail,
+  sendResetPasswordEmail,
+  sendRestSuccessEmail,
+} from "../utils/SendEmail.js";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -28,55 +33,45 @@ const signup = asyncHandler(async (req, res, next) => {
   }
 
   // Generate verification token (with expiration)
-  const verificationToken = crypto.randomBytes(32).toString("hex");
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(verificationToken)
-    .digest("hex");
+  const verificationToken = Math.floor(
+    100000 + Math.random() * 900000
+  ).toString();
 
   // Create new user
-  const newUser = await User.create({
+  const newUser = new User({
     firstName,
     lastName,
     email,
     password,
     position,
-    verificationToken: hashedToken,
+    verificationToken,
     verificationTokenExpiry: Date.now() + 3600000, // 1 hour expiration
   });
 
-  if (!newUser) {
-    return next(new CustomError("Failed to create user", 400));
-  }
+  // Save user
+  await newUser.save();
 
-  try {
-    await sendVerificationEmail(email, verificationToken);
-    res.status(201).json({
-      message: "User created successfully. Please verify your email",
-    });
-  } catch (error) {
-    await User.findByIdAndDelete(newUser._id);
-    return next(
-      new CustomError(
-        "Failed to send verification email. Please try again",
-        500
-      )
-    );
-  }
+  // Generate access and refresh tokens
+  generateAccessToken(res, newUser);
+  generateRefreshToken(res, newUser);
+
+  // Send verification email
+  await sendVerificationEmail(newUser.email, verificationToken);
+
+  res.status(201).json({
+    message: "User created successfully. Please verify your email",
+  });
 });
 
 // @desc Verify email
-// @route GET /api/auth/verify/:token
+// @route GET /api/auth/verify-email
 // @access Public
 const verifyEmail = asyncHandler(async (req, res, next) => {
-  const { token } = req.params;
-
-  // Check if token is valid
-  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const { code } = req.body;
 
   // Find user with token
   const user = await User.findOne({
-    verificationToken: hashedToken,
+    verificationToken: code,
     verificationTokenExpiry: { $gt: Date.now() },
   });
 
@@ -87,31 +82,12 @@ const verifyEmail = asyncHandler(async (req, res, next) => {
 
   // Update user to verified
   user.isVerified = true;
-  user.verificationToken = null;
-  user.verificationTokenExpiry = null;
+  user.verificationToken = undefined;
+  user.verificationTokenExpiry = undefined;
   await user.save();
 
-  // Generate access and refresh tokens
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
-
-  // Set cookies
-  res.cookie("access_token", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
-
-  res.cookie("refresh_token", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
-
   // Prepare response
-  const response = await User.findById(user._id);
+  const response = await User.findById(user._id).select("-password");
 
   // Send response
   res.status(200).json(response);
@@ -143,23 +119,8 @@ const login = asyncHandler(async (req, res, next) => {
   }
 
   // Generate JWT tokens
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
-
-  // Set cookies
-  res.cookie("access_token", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
-
-  res.cookie("refresh_token", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
+  generateAccessToken(res, user);
+  generateRefreshToken(res, user);
 
   // Prepare response
   const response = await User.findById(user._id).select("-password");
@@ -168,4 +129,90 @@ const login = asyncHandler(async (req, res, next) => {
   res.status(200).json(response);
 });
 
-export { signup, verifyEmail, login };
+// @desc Logout
+// @route POST /api/auth/logout
+// @access Private
+const logout = asyncHandler(async (req, res, next) => {
+  res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
+
+  res.status(200).json({
+    message: "Logout successful",
+  });
+});
+
+// @desc Forgot password
+// @route POST /api/auth/forgot-password
+// @access Public
+const forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+
+  // Check if user exists
+  const user = await User.findOne({ email });
+  if (!user) {
+    return next(new CustomError("No account found. Please sign up.", 404));
+  }
+
+  // Generate reset token
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordExpiry = Date.now() + 3600000; // 1 hour
+
+  // Save user
+  await user.save();
+
+  // Send email
+  await sendResetPasswordEmail(
+    user.email,
+    `${process.env.CLIENT_URL}/reset-password/${resetToken}`
+  );
+
+  res.status(200).json({
+    message: "Reset password email sent. Please check your email.",
+  });
+});
+
+// @desc Reset password
+// @route POST /api/auth/reset-password/:resetToken
+// @access Public
+const resetPassword = asyncHandler(async (req, res, next) => {
+  const { resetToken } = req.params;
+  const { password } = req.body;
+
+  // Find user with token
+  const user = await User.findOne({
+    resetPasswordToken: resetToken,
+    resetPasswordExpiry: { $gt: Date.now() },
+  });
+
+  // If user not found
+  if (!user) {
+    return next(new CustomError("Invalid or expired reset token", 400));
+  }
+
+  // Update user
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const updateUser = await User.findOneAndUpdate(
+    { _id: user._id },
+    {
+      password: hashedPassword,
+    },
+    { new: true }
+  );
+
+  updateUser.resetPasswordToken = undefined;
+  updateUser.resetPasswordExpiry = undefined;
+  await updateUser.save();
+
+  // Send email
+  await sendRestSuccessEmail(updateUser.email);
+
+  // Send response
+  res.status(200).json({
+    message: "Password reset successful. Please login.",
+  });
+});
+
+export { signup, verifyEmail, login, logout, forgotPassword, resetPassword };
