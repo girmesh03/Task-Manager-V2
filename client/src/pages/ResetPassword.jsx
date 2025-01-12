@@ -60,112 +60,110 @@ const ResetPassword = () => {
 
   return (
     <Box
-      width="100%"
-      height="100%"
-      p={1}
-      display="flex"
-      justifyContent="center"
-      flexDirection="column"
-      alignItems="center"
+      sx={{
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        maxWidth: 400,
+        width: "100%",
+        m: "0 auto",
+        py: 3,
+      }}
     >
-      <Card variant="outlined" sx={{ maxWidth: 400, width: "100%" }}>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            gap: 2,
-          }}
-          component="form"
-          autoComplete="off"
-          noValidate
-          onSubmit={handlePasswordReset}
+      <Card
+        variant="outlined"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          py: 4,
+        }}
+        component="form"
+        autoComplete="off"
+        noValidate
+        onSubmit={handlePasswordReset}
+      >
+        <Typography variant="h5" textAlign="center">
+          Reset Your Password
+        </Typography>
+
+        <Typography variant="body2" textAlign="center" color="text.secondary">
+          Enter and confirm your new password below.
+        </Typography>
+
+        <FormControl fullWidth>
+          <FormLabel htmlFor="newPassword">New Password</FormLabel>
+          <TextField
+            id="newPassword"
+            placeholder="••••••"
+            type={showPassword ? "text" : "password"}
+            variant="outlined"
+            required
+            fullWidth
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={togglePasswordVisibility}
+                      size="small"
+                      edge="end"
+                      sx={{ border: "none" }}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        </FormControl>
+
+        <FormControl fullWidth>
+          <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
+          <TextField
+            id="confirmPassword"
+            placeholder="••••••"
+            type={showConfirmPassword ? "text" : "password"}
+            variant="outlined"
+            required
+            fullWidth
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={toggleConfirmPasswordVisibility}
+                      size="small"
+                      edge="end"
+                      sx={{ border: "none" }}
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        </FormControl>
+
+        {error && <Alert severity="error">{error}</Alert>}
+
+        <Button variant="contained" type="submit" fullWidth>
+          Reset Password
+        </Button>
+        <Button
+          variant="text"
+          startIcon={<ArrowBackIosRoundedIcon />}
+          onClick={() => navigate("/login", { replace: true })}
         >
-          <Typography variant="h5" textAlign="center">
-            Reset Your Password
-          </Typography>
-
-          <Typography variant="body2" textAlign="center" color="text.secondary">
-            Enter and confirm your new password below.
-          </Typography>
-
-          <FormControl fullWidth>
-            <FormLabel htmlFor="newPassword">New Password</FormLabel>
-            <TextField
-              id="newPassword"
-              placeholder="••••••"
-              type={showPassword ? "text" : "password"}
-              variant="outlined"
-              required
-              fullWidth
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={togglePasswordVisibility}
-                        size="small"
-                        edge="end"
-                        sx={{ border: "none" }}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          </FormControl>
-
-          <FormControl fullWidth>
-            <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
-            <TextField
-              id="confirmPassword"
-              placeholder="••••••"
-              type={showConfirmPassword ? "text" : "password"}
-              variant="outlined"
-              required
-              fullWidth
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={toggleConfirmPasswordVisibility}
-                        size="small"
-                        edge="end"
-                        sx={{ border: "none" }}
-                      >
-                        {showConfirmPassword ? (
-                          <VisibilityOff />
-                        ) : (
-                          <Visibility />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          </FormControl>
-
-          {error && <Alert severity="error">{error}</Alert>}
-
-          <Button variant="contained" type="submit" fullWidth>
-            Reset Password
-          </Button>
-          <Button
-            variant="text"
-            startIcon={<ArrowBackIosRoundedIcon />}
-            onClick={() => navigate("/login", { replace: true })}
-          >
-            Back to login
-          </Button>
-        </Box>
+          Back to login
+        </Button>
       </Card>
     </Box>
   );
