@@ -35,6 +35,26 @@ const TaskSchema = new mongoose.Schema(
       enum: ["High", "Medium", "Low"],
       default: "Low",
     },
+    activities: [
+      {
+        action: {
+          type: String,
+          required: true,
+        },
+        performedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        timestamp: {
+          type: Date,
+          default: Date.now,
+        },
+        notes: {
+          type: String,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
