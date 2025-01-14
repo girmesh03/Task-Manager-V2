@@ -29,7 +29,7 @@ const items = [
   },
 ];
 
-export default function Content() {
+const Content = () => {
   return (
     <Stack
       sx={{
@@ -57,4 +57,6 @@ export default function Content() {
       ))}
     </Stack>
   );
-}
+};
+
+export default Content;

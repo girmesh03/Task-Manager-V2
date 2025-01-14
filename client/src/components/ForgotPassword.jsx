@@ -1,4 +1,3 @@
-import * as React from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -8,9 +7,10 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import OutlinedInput from '@mui/material/OutlinedInput';
 
-function ForgotPassword({ open, handleClose }) {
+
+const ForgotPassword = ({open, handleClose}) => {
   return (
-    <Dialog
+     <Dialog
       open={open}
       onClose={handleClose}
       PaperProps={{
@@ -49,8 +49,9 @@ function ForgotPassword({ open, handleClose }) {
         </Button>
       </DialogActions>
     </Dialog>
-  );
+  )
 }
+
 
 ForgotPassword.propTypes = {
   handleClose: PropTypes.func.isRequired,

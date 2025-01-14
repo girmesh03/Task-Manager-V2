@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Outlet } from "react-router";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -8,6 +9,9 @@ import Header from "../components/Header";
 import SideMenu from "../components/SideMenu";
 
 const AppLayout = () => {
+  const [searchText, setSearchText] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
+
   return (
     <Box sx={{ display: "flex" }}>
       <SideMenu />
@@ -32,8 +36,11 @@ const AppLayout = () => {
             mt: { xs: 8, md: 0 },
           }}
         >
-          <Header />
-          <Outlet />
+          <Header
+            setSearchText={setSearchText}
+            setSelectedDate={setSelectedDate}
+          />
+          <Outlet context={{ searchText, selectedDate }} />
         </Stack>
       </Box>
     </Box>
