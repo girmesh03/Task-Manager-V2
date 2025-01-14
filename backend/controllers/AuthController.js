@@ -52,8 +52,8 @@ const signup = asyncHandler(async (req, res, next) => {
   await newUser.save();
 
   // Generate access and refresh tokens
-  generateAccessToken(res, newUser);
-  generateRefreshToken(res, newUser);
+  // generateAccessToken(res, newUser);
+  // generateRefreshToken(res, newUser);
 
   // Send verification email
   await sendVerificationEmail(newUser.email, verificationToken);
