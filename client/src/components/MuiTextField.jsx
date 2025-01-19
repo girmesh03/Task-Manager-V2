@@ -26,7 +26,7 @@ const MuiTextField = ({
         label={label}
         type={type}
         // autoFocus
-        // size="small"
+        size="small"
         fullWidth
         variant="outlined"
         required={!!rules?.required}

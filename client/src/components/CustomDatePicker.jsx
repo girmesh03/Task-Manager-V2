@@ -48,8 +48,8 @@ ButtonField.propTypes = {
   setOpen: PropTypes.func,
 };
 
-const CustomDatePicker = ({ setSelectedDate }) => {
-  const [value, setValue] = useState(dayjs("2023-04-17")); // Initial date
+const CustomDatePicker = ({ selectedDate, setSelectedDate }) => {
+  const [value, setValue] = useState(null); // Initial date
   const [open, setOpen] = useState(false);
 
   const handleChange = (newValue) => {
@@ -68,7 +68,13 @@ const CustomDatePicker = ({ setSelectedDate }) => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         value={value}
-        label={value ? value.format("MMM DD, YYYY") : "Pick a date"} // Check value validity
+        label={
+          value
+            ? value.format("YYYY-MM-DD")
+            : selectedDate
+            ? dayjs(selectedDate).format("YYYY-MM-DD")
+            : "Pick a date"
+        } // Check value validity
         onChange={handleChange} // Call handleChange when a new date is selected
         onAccept={handleOnAccept}
         slots={{ field: ButtonField }}
@@ -88,6 +94,7 @@ const CustomDatePicker = ({ setSelectedDate }) => {
 
 CustomDatePicker.propTypes = {
   setSelectedDate: PropTypes.func.isRequired,
+  selectedDate: PropTypes.string,
 };
 
 export default CustomDatePicker;

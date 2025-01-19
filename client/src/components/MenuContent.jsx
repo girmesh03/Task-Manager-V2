@@ -8,9 +8,9 @@ import Stack from "@mui/material/Stack";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
-import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
+import CategoryIcon from "@mui/icons-material/Category";
+import ProjectIcon from "@mui/icons-material/ListAlt";
 
 const mainListItems = [
   { text: "Dashboard", icon: <HomeRoundedIcon />, path: "/dashboard" },
@@ -19,9 +19,9 @@ const mainListItems = [
 ];
 
 const secondaryListItems = [
-  { text: "Settings", icon: <SettingsRoundedIcon /> },
-  { text: "About", icon: <InfoRoundedIcon /> },
-  { text: "Feedback", icon: <HelpRoundedIcon /> },
+  { text: "Projects", icon: <ProjectIcon />, path: "/projects" },
+  { text: "Categories", icon: <CategoryIcon />, path: "/categories" },
+  { text: "Reports", icon: <InfoRoundedIcon />, path: "/reports" },
 ];
 
 const MenuContent = () => {
@@ -46,7 +46,7 @@ const MenuContent = () => {
       <List dense>
         {secondaryListItems.map((item, index) => (
           <ListItem key={index} disablePadding sx={{ display: "block" }}>
-            <ListItemButton>
+            <ListItemButton component={Link} to={item.path}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItemButton>
