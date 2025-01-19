@@ -7,7 +7,6 @@ import {
   Button,
   FormControl,
   FormLabel,
-  IconButton,
   InputAdornment,
   MenuItem,
   Select,
@@ -69,7 +68,7 @@ const Signup = () => {
       sx={{
         justifyContent: "center",
         gap: { xs: 6, sm: 12 },
-        py: { xs: 6, sm: 8 },
+        p: 1,
         mx: "auto",
       }}
     >
@@ -110,7 +109,7 @@ const Signup = () => {
               columnGap={2}
               direction={{ xs: "column", lg: "row" }}
             >
-              <FormControl>
+              <FormControl fullWidth>
                 <FormLabel htmlFor="firstName">First Name</FormLabel>
                 <MuiTextField
                   name="firstName"
@@ -119,7 +118,7 @@ const Signup = () => {
                   rules={{ required: "First name is required" }}
                 />
               </FormControl>
-              <FormControl>
+              <FormControl fullWidth>
                 <FormLabel htmlFor="lastName">Last Name</FormLabel>
                 <MuiTextField
                   name="lastName"
@@ -208,7 +207,7 @@ const Signup = () => {
                 />
               </Box>
             </Stack>
-            <FormControl>
+            <FormControl fullWidth>
               <FormLabel htmlFor="password">Password</FormLabel>
               <MuiTextField
                 name="password"
@@ -219,15 +218,16 @@ const Signup = () => {
                 rules={{ required: "Password is required" }}
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={togglePasswordVisibility}
-                        size="small"
-                        edge="end"
-                        sx={{ border: "none" }}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
+                    <InputAdornment
+                      position="end"
+                      onClick={togglePasswordVisibility}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      {showPassword ? (
+                        <VisibilityOff fontSize="small" />
+                      ) : (
+                        <Visibility fontSize="small" />
+                      )}
                     </InputAdornment>
                   ),
                 }}
