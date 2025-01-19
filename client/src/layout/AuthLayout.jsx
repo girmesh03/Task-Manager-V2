@@ -1,49 +1,106 @@
-import { Outlet } from "react-router";
-import { Box, Stack } from "@mui/material";
+import { useSelector } from "react-redux";
+import { useState } from "react";
+import { Outlet, useNavigate } from "react-router";
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from "@mui/material";
+import ListIcon from "@mui/icons-material/List";
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-import ColorModeSelect from "../shared-theme/ColorModeSelect";
+import ColorModeIconDropdown from "../shared-theme/ColorModeIconDropdown";
+import CustomLogo from "../components/CustomLogo";
 
 const AuthLayout = () => {
+  const { currentUser } = useSelector((state) => state.auth);
+  const [menuAnchor, setMenuAnchor] = useState(null);
+
+  const navigate = useNavigate();
+
+  const handleMenuOpen = (event) => {
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  };
+
+  const handleLogout = () => {
+    setMenuAnchor(null);
+    console.log("Logout");
+  };
+
   return (
-    <Box
-      width="100%"
-      sx={{
-        height: "calc((1 - var(--template-frame-height, 0)) * 100dvh)",
-        overflow: "hidden",
-      }}
-    >
-      <ColorModeSelect
-        sx={{ position: "fixed", top: "1rem", right: "1rem", zIndex: 1 }}
-      />
+    <Box width="100%" height="100%" sx={{ pt: 8 }}>
       <Stack
-        direction="column"
-        component="main"
-        sx={[
-          {
-            height: "100%",
-            overflow: "auto",
-            p: 1,
-          },
-          (theme) => ({
-            "&::before": {
-              content: '""',
-              display: "block",
-              position: "absolute",
-              zIndex: -1,
-              inset: 0,
-              backgroundImage:
-                "radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))",
-              backgroundRepeat: "no-repeat",
-              ...theme.applyStyles("dark", {
-                backgroundImage:
-                  "radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))",
-              }),
-            },
-          }),
-        ]}
+        direction="row"
+        sx={{
+          display: "flex",
+          width: "100%",
+          alignItems: { xs: "flex-start", md: "center" },
+          justifyContent: "space-between",
+          maxWidth: { sm: "100%", md: "1700px" },
+          p: 1.5,
+          px: { md: 4 },
+          position: "fixed",
+          top: 0,
+          backgroundColor: "background.default",
+          zIndex: 1,
+          boxShadow:
+            "0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%)",
+        }}
       >
-        <Outlet />
+        <Stack
+          direction="row"
+          spacing={1}
+          onClick={() => navigate(currentUser ? "/dashboard" : "/")}
+          sx={{ cursor: "pointer" }}
+        >
+          <CustomLogo />
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ color: "text.primary" }}
+          >
+            Taskmanager
+          </Typography>
+        </Stack>
+        <Stack direction="row" spacing={2}>
+          <ColorModeIconDropdown />
+          <IconButton size="small" onClick={handleMenuOpen}>
+            <ListIcon />
+          </IconButton>
+          <Menu
+            anchorEl={menuAnchor}
+            open={Boolean(menuAnchor)}
+            onClose={handleMenuClose}
+          >
+            {currentUser ? (
+              <MenuItem onClick={handleLogout}>
+                <LogoutIcon /> Logout
+              </MenuItem>
+            ) : (
+              <>
+                <MenuItem onClick={() => navigate("/login")}>
+                  <LoginIcon /> Login
+                </MenuItem>
+                <MenuItem onClick={() => navigate("/register")}>
+                  <AccountCircleIcon /> Register
+                </MenuItem>
+              </>
+            )}
+          </Menu>
+        </Stack>
       </Stack>
+      <Box width="100%" height="100%" sx={{ px: { md: 4 }, overflow: "auto" }}>
+        <Outlet />
+      </Box>
     </Box>
   );
 };

@@ -55,7 +55,7 @@ const getTasks = asyncHandler(async (req, res, next) => {
 // @access Private
 const getTask = asyncHandler(async (req, res, next) => {
   const { taskId } = req.params;
-
+  console.log("taskId", taskId);
   const task = await Task.findById(taskId)
     .populate({
       path: "assignedTo",

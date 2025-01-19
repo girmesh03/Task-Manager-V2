@@ -11,7 +11,6 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  IconButton,
   InputAdornment,
   Stack,
   Typography,
@@ -61,7 +60,7 @@ const Login = () => {
       sx={{
         justifyContent: { xs: "flex-end", md: "center" },
         gap: { xs: 6, sm: 12 },
-        py: { xs: 6, sm: 8 },
+        p: 1,
         mx: "auto",
       }}
     >
@@ -97,7 +96,7 @@ const Login = () => {
               gap: 2,
             }}
           >
-            <FormControl>
+            <FormControl fullWidth>
               <FormLabel htmlFor="email">Email</FormLabel>
               <MuiTextField
                 name="email"
@@ -108,7 +107,7 @@ const Login = () => {
                 rules={{ required: "Email is required" }}
               />
             </FormControl>
-            <FormControl>
+            <FormControl fullWidth>
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <FormLabel htmlFor="password">Password</FormLabel>
                 <Link
@@ -133,15 +132,16 @@ const Login = () => {
                 rules={{ required: "Password is required" }}
                 InputProps={{
                   endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={togglePasswordVisibility}
-                        size="small"
-                        edge="end"
-                        sx={{ border: "none" }}
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
+                    <InputAdornment
+                      position="end"
+                      onClick={togglePasswordVisibility}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      {showPassword ? (
+                        <VisibilityOff fontSize="small" />
+                      ) : (
+                        <Visibility fontSize="small" />
+                      )}
                     </InputAdornment>
                   ),
                 }}

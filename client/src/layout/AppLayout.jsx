@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Outlet } from "react-router";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { alpha } from "@mui/material/styles";
 
 import AppNavbar from "../components/AppNavbar";
 import Header from "../components/Header";
@@ -13,34 +12,38 @@ const AppLayout = () => {
   const [selectedDate, setSelectedDate] = useState(null);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100%" }}>
       <SideMenu />
       <AppNavbar />
       {/* Main content */}
-      <Box
-        component="main"
-        sx={(theme) => ({
-          flexGrow: 1,
-          backgroundColor: theme.vars
-            ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
-            : alpha(theme.palette.background.default, 1),
-          overflow: "auto",
-        })}
-      >
+      <Box height="100%" component="main" sx={{ flexGrow: 1 }}>
         <Stack
-          spacing={2}
-          sx={{
-            alignItems: "center",
-            mx: 3,
-            pb: 5,
-            mt: { xs: 8, md: 0 },
-          }}
+          direction="column"
+          sx={{ pt: { xs: "3.75rem", md: 0 }, height: "100%" }}
         >
           <Header
             setSearchText={setSearchText}
+            selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
           />
-          <Outlet context={{ searchText, selectedDate }} />
+          <Box
+            width="100%"
+            height="100%"
+            sx={{
+              overflow: "auto",
+              py: 2,
+              px: { xs: 1, md: 3 },
+            }}
+          >
+            <Outlet
+              context={{
+                searchText,
+                setSearchText,
+                selectedDate,
+                setSelectedDate,
+              }}
+            />
+          </Box>
         </Stack>
       </Box>
     </Box>

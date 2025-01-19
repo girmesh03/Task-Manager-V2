@@ -12,6 +12,7 @@ import OptionsMenu from "./OptionsMenu";
 import CustomLogo from "./CustomLogo";
 
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
 const drawerWidth = 240;
 
@@ -28,6 +29,8 @@ const Drawer = styled(MuiDrawer)({
 
 const SideMenu = () => {
   const { currentUser } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
   return (
     <Drawer
       variant="permanent"
@@ -36,6 +39,7 @@ const SideMenu = () => {
         [`& .${drawerClasses.paper}`]: {
           backgroundColor: "background.paper",
           overflow: "hidden",
+          position: "relative",
         },
       }}
     >
@@ -44,9 +48,13 @@ const SideMenu = () => {
           display: "flex",
           justifyContent: "center",
           gap: 1,
-          mt: "calc(var(--template-frame-height, 0px) + 4px)",
+          mt: "calc(var(--template-frame-height, 0px) + 2px)",
           p: 1.5,
+          boxShadow:
+            "0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%)",
+          cursor: "pointer",
         }}
+        onClick={() => navigate("/dashboard")}
       >
         <CustomLogo />
         <Typography variant="h4" component="h1" sx={{ color: "text.primary" }}>
